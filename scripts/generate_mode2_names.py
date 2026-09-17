@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CHAR_TABLE = ROOT / "files" / "CharTable.txt"
 JAPANESE_NAMES = ROOT / "texts" / "DP" / "ja" / "monsname.json"
+CHINESE_NAMES = ROOT / "texts" / "DP" / "zh_Hans" / "monsname.json"
 EMERALD_NAMES = Path(os.environ.get("POKEEMERALD", "/private/tmp/pokeemerald")) / "src" / "data" / "text" / "species_names.h"
 EMERALD_POKEDEX = Path(os.environ.get("POKEEMERALD", "/private/tmp/pokeemerald")) / "include" / "constants" / "pokedex.h"
 OUT_DIR = ROOT / "asm" / "common"
@@ -54,6 +55,10 @@ def main():
     chars = load_chars()
     japanese_json = json.loads(JAPANESE_NAMES.read_text(encoding="utf-8"))
     japanese = [entry["translation"] for entry in japanese_json]
+    chinese_json = json.loads(CHINESE_NAMES.read_text(encoding="utf-8"))
+    chinese = [entry["translation"] for entry in chinese_json[:387]]
+    if len(chinese) != 387:
+        raise ValueError(f"expected 386 Chinese species names, got {len(chinese) - 1}")
 
     source = EMERALD_NAMES.read_text(encoding="utf-8")
     matches = re.finditer(
@@ -77,6 +82,7 @@ def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     write_header(OUT_DIR / "mode2_japanese_names.h", "sMode2JapaneseNames", japanese, chars)
     write_header(OUT_DIR / "mode2_english_names.h", "sMode2EnglishNames", english, chars)
+    write_header(OUT_DIR / "mode2_chinese_names.h", "sMode2ChineseNames", chinese, chars)
 
 
 if __name__ == "__main__":

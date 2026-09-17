@@ -41,9 +41,12 @@ bool ConvertRSStringToDPStringInternational(const u8 *rs_str, u16 *dp_str, u32 l
       dp_str[r1] = EOS;
       return FALSE;
     }
-    if (language != LANGUAGE_JAPANESE && rs_str[i] >= 0x01 && rs_str[i] <= 0x1E && rs_str[i] != 0x06 && rs_str[i] != 0x1B)
+    if (language != LANGUAGE_JAPANESE && rs_str[i] >= 0x01 && rs_str[i] <= 0x1E && rs_str[i] != 0x06 && rs_str[i] != 0x1B
+        && i + 1 < length - 1 && rs_str[i + 1] != 0xFF
+        && ((rs_str[i] << 8) + rs_str[i + 1]) < 0x1E5E)
     {
-      *dp_str++ = conversion_table_chinese[((rs_str[i++] << 8) + rs_str[i])];
+      *dp_str++ = conversion_table_chinese[((rs_str[i] << 8) + rs_str[i + 1])];
+      i++;
     }
     else if (rs_str[i] == 0xEA || rs_str[i] == 0xEB)
     {
