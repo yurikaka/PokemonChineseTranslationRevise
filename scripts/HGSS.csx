@@ -124,7 +124,12 @@ foreach (var gameCode in GAME_CODE_TO_TITLE.Keys)
   // Edit overarm9.bin
   using var overarm9Stream = File.OpenRead($"original_files/HGSS/{gameCode}/overarm9.bin");
   var overarm9 = new OverlayTable(overarm9Stream, 0, (uint)overarm9Stream.Length, true);
-  overarm9.overlayTable[74].ramSize = (uint)File.ReadAllBytes($"out/{gameCode}/overlay/overlay_0074.bin").Length;
+  var overlay74 = File.ReadAllBytes($"out/{gameCode}/overlay/overlay_0074.bin");
+  var overlay74Item = overarm9.overlayTable[74];
+  overlay74Item.ramSize = (uint)BLZ.Decompress(overlay74).Length;
+  // The low 24 bits store the compressed file size; the high byte stores
+  // overlay flags (including the compressed bit).
+  overlay74Item.reserved = (overlay74Item.reserved & 0xFF000000) | (uint)overlay74.Length;
   using var outputStream = new MemoryStream();
   overarm9.WriteTo(outputStream);
   File.WriteAllBytes($"out/{gameCode}/overarm9.bin", outputStream.ToArray()[..(0x20 * overarm9.overlayTable.Count)]);

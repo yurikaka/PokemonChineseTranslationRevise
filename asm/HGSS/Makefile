@@ -1,5 +1,7 @@
 #---------------------------------------------------------------------------------
 .SUFFIXES:
+# overlay 112 reuses import.o after the standalone import target is linked.
+.SECONDARY:
 #---------------------------------------------------------------------------------
 
 ifeq ($(strip $(DEVKITARM)),)
@@ -95,7 +97,7 @@ endif
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project (order is important)
 #---------------------------------------------------------------------------------
-LIBS	:= -lnds9 -lc
+LIBS	:= $(if $(wildcard $(LIBNDS)/lib/libnds9.a),-lnds9) -lc
 
 
 #---------------------------------------------------------------------------------
@@ -153,6 +155,13 @@ else
 #---------------------------------------------------------------------------------
 
 all: $(OUTPUT).bin $(OUTPUT).sym
+
+# import.bin is checked in, but import.o is a build-time input for overlay 112.
+# Always walk this target's prerequisites after the script clears build/.
+ifeq ($(TARGET),import)
+.PHONY: $(OUTPUT).bin FORCE_IMPORT
+$(OUTPUT).elf: FORCE_IMPORT
+endif
 
 $(OUTPUT).bin : $(OUTPUT).elf
 	$(OBJCOPY) -O binary $< $@
