@@ -60,6 +60,7 @@ GRAPHICS	:=	gfx
 ARCH	:= -mabi=aapcs -march=armv5te -mtune=arm946e-s -mthumb
 
 CFLAGS	:=	-g -Wall -Os\
+		-std=gnu17 \
  		-fomit-frame-pointer\
 		-ffast-math -fshort-wchar \
 		$(ARCH)

@@ -33,3 +33,18 @@
 - [PCTRTools](https://github.com/Xzonn/PCTRTools)：汉化修正工具。
 - [NitroPatcher](https://github.com/Xzonn/NitroPatcher)：补丁应用工具。
 - [PokemonGen4FontPatch](https://github.com/Xzonn/PokemonGen4FontPatch)：字库扩容补丁。
+
+## Linux 本地构建（白金）
+
+需要 .NET 8 SDK、`dotnet-script`、devkitARM、Python 3，以及以下两款 Noto CJK 字体：
+
+- `NotoSerifSC-VF.ttf`
+- `NotoSansMonoCJKjp-VF.ttf`
+
+设置 `DEVKITPRO`、`DEVKITARM`、`PCTR_FONT_DIR` 并将相关工具加入 `PATH` 后运行：
+
+```bash
+scripts/build-linux.sh Pt
+```
+
+生成的补丁位于 `out/Patch-Pt.xzp`。Linux 构建使用 SkiaSharp 和开源字体，字体图形不会与 Windows／GDI+ 构建保持字节级一致。
